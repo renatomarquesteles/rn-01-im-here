@@ -1,4 +1,5 @@
 import {
+  Alert,
   FlatList,
   Text,
   TextInput,
@@ -9,9 +10,10 @@ import {
 import { Participant } from '../../components/Participant';
 
 import { styles } from './styles';
+import { useState } from 'react';
 
 export function Home() {
-  const participants = [
+  const [participants, setParticipants] = useState([
     'John',
     'Steve',
     'Carl',
@@ -26,14 +28,40 @@ export function Home() {
     'Ronald',
     'William',
     'David',
-  ];
+  ]);
+  const [participantName, setParticipantName] = useState('');
 
   function handleParticipantAdd() {
-    console.log('button clicked!');
+    if (participants.includes(participantName)) {
+      return Alert.alert(
+        'Duplicated participant',
+        'There is already a participant with this name on the list.'
+      );
+    }
+
+    setParticipants((state) => [...state, participantName]);
+    setParticipantName('');
   }
 
   function handleParticipantRemove(name: string) {
-    console.log(`${name} removed!`);
+    Alert.alert(
+      `Removing ${name}`,
+      'Are you sure you want to remove this participant?',
+      [
+        {
+          text: 'Cancel',
+          style: 'cancel',
+        },
+        {
+          text: 'Confirm',
+          onPress: () => {
+            setParticipants((state) =>
+              state.filter((participant) => participant !== name)
+            );
+          },
+        },
+      ]
+    );
   }
 
   return (
@@ -46,9 +74,14 @@ export function Home() {
           style={styles.input}
           placeholder="Participant's name"
           placeholderTextColor="#6b6b6b"
+          value={participantName}
+          onChangeText={setParticipantName}
         />
 
-        <TouchableOpacity style={styles.button} onPress={handleParticipantAdd}>
+        <TouchableOpacity
+          style={styles.button}
+          onPress={() => handleParticipantAdd()}
+        >
           <Text style={styles.buttonText}>+</Text>
         </TouchableOpacity>
       </View>
